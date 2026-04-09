@@ -1,4 +1,105 @@
-# Code Scout
+# Code Scout API
+An API designed for fast responses, lightweight performance, and 24/7 availability.
+## API Endpoints
+
+All responses are returned as UTF-8 JSON.
+- `URL ` - https://codescoutapi.onrender.com/
+- `GET /` - service metadata
+- `GET /search?q=<query>&limit=<number>` - search game slugs
+- `GET /codes/:slug` - fetch codes for a game slug
+
+## API Route Responses
+
+### Search Route Response
+- `GET /search?q=<query>&limit=<number>` - search game slugs
+
+
+```js
+const axios = require("axios");
+
+async function search(slug, limit) {
+  try {
+    const res = await axios.get(`https://codescoutapi.onrender.com/search?q=${slug}&limit=${limit}`);
+    return res.data;
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+(async () => {
+  console.log(await search("bloxfruit", 5));
+})();
+```
+
+```json
+[
+  {
+    "title": "Blox Fruits Codes (April 2026)",
+    "slug": "blox-fruits"
+  },
+  {
+    "title": "Fruit Battlegrounds Codes (April 2026)",
+    "slug": "fruit-battlegrounds"
+  }
+]
+```
+
+### Codes Route Response
+- `GET /search?q=<query>&limit=<number>` - search game slugs
+```js
+const axios = require("axios");
+
+async function search(slug) {
+  try {
+    const res = await axios.get(`https://codescoutapi.onrender.com/codes/${slug}`);
+    return res.data;
+  } catch (e) {
+    if (e.response?.status === 404) {
+      return e.response.data; 
+    }
+    return { error: e.message };
+  }
+}
+
+(async () => {
+  console.log(await search("blox-fruit"));
+})();
+```
+
+```json
+{
+  "message": "OK",
+  "status": 200,
+  "activeCodes": [
+    {
+      "code": "SUBFORX2",
+      "description": "2x XP boost",
+      "isNew": true
+    }
+  ],
+  "expiredCodes": [
+    {
+      "code": "OLDCODE1"
+    }
+  ]
+}
+```
+
+## Curl Res
+
+### Search
+
+```bash
+curl -s "http://localhost:3000/search?q=fruit&limit=5" | jq
+```
+
+### Fetch codes
+
+```bash
+curl -s "http://localhost:3000/codes/pickaxe-simulator" | jq
+```
+
+# Code Scout Library
 
 A lightweight Node.js library for scraping and managing Roblox game codes from beebom.com with persistent caching, request tracking, and intelligent search.
 
@@ -260,3 +361,4 @@ main();
 - Requires active internet connection for web scraping
 - beebom.com structure changes may require scraper updates
 - Statistics persist in `cache/stat.json` even if application restarts
+
