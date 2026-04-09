@@ -1,0 +1,31 @@
+{
+  "name": "codescout",
+  "version": "1.0.0",
+  "description": "The best Roblox library code fetcher—just enter a query name and it will return the latest game codes. It supports over 600 games, including Blox Fruits, Grow a Garden, and many other popular titles.",
+  "keywords": [
+    "code",
+    "roblox",
+    "gamecode"
+  ],
+  "homepage": "https://github.com/Van1a/codescout#readme",
+  "bugs": {
+    "url": "https://github.com/Van1a/codescout/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Van1a/codescout.git"
+  },
+  "license": "MIT",
+  "author": "ikura",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.15.0",
+    "cheerio": "^1.2.0",
+    "fuse.js": "^7.3.0"
+  },
+  "devDependencies": {}
+}
