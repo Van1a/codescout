@@ -197,7 +197,7 @@ class robloxCode {
     };
   }
 
-  async search(query, limit = 10) {
+  async search(query, limit = 20) {
     if (!query || typeof query !== "string") return [];
 
     if (this.articles.length === 0) {
@@ -207,11 +207,12 @@ class robloxCode {
     return this.fuse.search(query, { limit }).map((r) => ({
       title: r.item.title,
       slug: r.item.slug,
+      score: r.score
     }));
   }
 
   async getCodeof(query) {
-    const results = await this.search(query, 10);
+    const results = await this.search(query, 20);
 
     if (!results.length) {
       return {
@@ -222,7 +223,7 @@ class robloxCode {
     }
 
     const first = results[0];
-    const similar = results[1] || null;
+    const similar = results.slice(1, 11);
 
     let slug = this.#slugify(first.slug);
 
@@ -317,6 +318,7 @@ class robloxCode {
 
     const result = {
       message,
+      query: first,
       status,
       activeCodes,
       expiredCodes: expiredCode($),
