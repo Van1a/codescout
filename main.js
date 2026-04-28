@@ -13,9 +13,7 @@ class robloxCode {
     this.#ensureCacheDir();
 
     try {
-      this.articles = JSON.parse(
-        fs.readFileSync("cache/data.json", "utf-8")
-      );
+      this.articles = JSON.parse(fs.readFileSync("cache/data.json", "utf-8"));
     } catch {
       this.articles = [];
     }
@@ -108,7 +106,10 @@ class robloxCode {
         return stats.requests;
       }
 
-      return Object.values(stats).reduce((sum, item) => sum + (item.request || 0), 0);
+      return Object.values(stats).reduce(
+        (sum, item) => sum + (item.request || 0),
+        0
+      );
     } catch {
       return 0;
     }
@@ -171,16 +172,11 @@ class robloxCode {
         if (result.length === 0) break;
 
         allResults.push(...result);
-        console.log(`Page ${c}: ${result.length}`);
-
-        c++; 
-      } catch (err) {
-        console.log("Stopped at page:", c);
-        break; 
+        c++;
+      } catch {
+        break;
       }
     }
-
-    console.log("Total:", allResults.length);
 
     fs.writeFileSync(
       "cache/data.json",
@@ -202,24 +198,33 @@ class robloxCode {
   }
 
   async search(query, limit = 10) {
-    if (!query || typeof query !== "string") {
-      return [];
-    }
+    if (!query || typeof query !== "string") return [];
 
     if (this.articles.length === 0) {
       await this.update();
     }
 
-    return this.fuse
-      .search(query, { limit })
-      .map((result) => ({
-        title: result.item.title,
-        slug: result.item.slug,
-      }));
+    return this.fuse.search(query, { limit }).map((r) => ({
+      title: r.item.title,
+      slug: r.item.slug,
+    }));
   }
 
-  async getCodeof(slug) {
-    slug = this.#slugify(slug);
+  async getCodeof(query) {
+    const results = await this.search(query, 10);
+
+    if (!results.length) {
+      return {
+        message: `No results for "${query}"`,
+        status: 404,
+        suggestions: [],
+      };
+    }
+
+    const first = results[0];
+    const similar = results[1] || null;
+
+    let slug = this.#slugify(first.slug);
 
     if (this.articles.length === 0) {
       await this.update();
@@ -240,7 +245,7 @@ class robloxCode {
       if (entry && Date.now() - entry._ts <= this.ttl) {
         const { _ts, ...data } = entry;
         this.#appendStat(slug);
-        return data;
+        return { ...data, match: first, similar };
       }
     }
 
@@ -315,6 +320,8 @@ class robloxCode {
       status,
       activeCodes,
       expiredCodes: expiredCode($),
+      match: first,
+      similar,
     };
 
     this.#appendStat(slug);

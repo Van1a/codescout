@@ -10,7 +10,7 @@ async function run() {
     //const updateResult = await api.update();
     //console.log(updateResult);
     
-    const call = await api.getCodeof('pickaxe-simulator');
+    const call = await api.getCodeof('blox frut');
     console.log(call);
 
    //const results = await api.search("fruit");
